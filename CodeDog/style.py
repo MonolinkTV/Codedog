@@ -13,40 +13,33 @@ STYLE_PATH = os.path.join(os.path.dirname(__file__), "style")
 _styleCache = {}
 
 
-# TODO: fix that .css cant be at the end of a file in style
-def getStyle(name: str):
-	# if name is in are cache
-	if name in _styleCache:
-		# return the cached style
-		return _styleCache[name]
-	# create a variable to store the style in
-	style = ""
-	# add the `name` to the path ([PATH_TO_PROJECT_DIR]\CodeDog\style\[NAME])
-	path = os.path.join(STYLE_PATH, name)
-	# if it exists and is a file ([PATH_TO_PROJECT_DIR]\CodeDog\style\[NAME].css)
-	if os.path.isfile(path + ".css"):
-		# open it up
-		with open(path + ".css") as f:
-			# read all the content and store it in variable `style`
-			style = f.read()
-	# if it exists and is a directory ([PATH_TO_PROJECT_DIR]\CodeDog\style\[NAME])
-	elif os.path.isdir(path):
-		# find every file ending with `.css`
-		for filePath in iglob(os.path.join(path, "*.css"), recursive=True):
-			# open it up
-			with open(filePath) as f:
-				# add the content to the style `variable`
-				# joining multiple together into one large style
-				style += "\n\n%s" % f.read()
+# `styleName` is like "dark" or "light"
+# `stylePath` is like "global" or "home/projectsList"
+def getStyle(styleName: str, stylePath: str):
+	# if we have a cached version of this file
+	if styleName in _styleCache and stylePath in _styleCache[styleName]:
+		# return cached
+		return _styleCache[styleName][stylePath]
+	# if we don't have an existing cache for `styleName`
+	if styleName not in _styleCache:
+		# create an empty dict for any cached files for are `stylename`
+		_styleCache[styleName] = {}
+	# join path's together that should lead to the css file
+	cssPath = os.path.join(STYLE_PATH, styleName, os.path.normpath(stylePath) + ".css")
+	# if its a file
+	if os.path.isfile(cssPath):
+		# open the file under variable name `f`
+		with open(cssPath) as f:
+			# read all file content
+			cssData = f.read()
+			# cache the file's content
+			_styleCache[styleName][stylePath] = cssData
+			# return the file's content
+			return cssData
 	else:
-		# raise an error saying that it failed to find
-		# but in this case its an unsupported type
-		# for example a symlink
-		raise FileNotFoundError(f"Failed to find folder at '{path}' or a file with the extension `.css`")
-	# save the style in the cache
-	_styleCache[name] = style.strip()
-	# return the resulting style
-	return style
+		# it did not exit or is not a file
+		# so raise an error/exception
+		raise FileNotFoundError(f"Failed to find '{stylePath}.css' for style '{styleName}' (at '{cssPath}')")
 
 
 def clearStyleCache():
