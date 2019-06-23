@@ -1,4 +1,3 @@
-from glob import iglob
 import os
 
 
@@ -45,3 +44,9 @@ def getStyle(styleName: str, stylePath: str):
 def clearStyleCache():
 	# empty the dictionary
 	_styleCache.clear()
+
+
+getStyle("light")
+
+
+print(_styleCache)
