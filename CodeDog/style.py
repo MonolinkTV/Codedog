@@ -13,6 +13,7 @@ STYLE_PATH = os.path.join(os.path.dirname(__file__), "style")
 _styleCache = {}
 
 
+# TODO: fix that .css cant be at the end of a file in style
 def getStyle(name: str):
 	# if name is in are cache
 	if name in _styleCache:
