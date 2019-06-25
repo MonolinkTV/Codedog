@@ -4,6 +4,8 @@ import sys
 from .window import Window
 
 
+# this function should be called by another file
+# to open the window
 def main():
 	# much like `System.out.println()` in java
 	print("Opening window.")
